@@ -67,14 +67,26 @@ Vagrant.configure("2") do |config|
   end
 
 
-config.vm.define "abellakr" do |abellakr|
-    abellakr.vm.hostname = "machine-S"
-    abellakr.vm.network "private_network", ip: "192.168.56.110"
+config.vm.define "abellakrS" do |abellakrS|
+    abellakrS.vm.hostname = "abellakrS"
+    abellakrS.vm.network "private_network", ip: "192.168.56.110", primary: true
+    abellakrS.vm.provision "shell", inline: <<-SHELL
+      # Remove the current default route (via eth0/NAT)
+      ip route del default
+      # Add new default route via eth1's gateway
+      ip route add default via 192.168.56.110 dev eth1
+    SHELL
   end
 
-  config.vm.define "mbenbajj" do |mbenbajj|
-    mbenbajj.vm.hostname = "machine-SW"
-    mbenbajj.vm.network "private_network", ip: "192.168.56.111"
+  config.vm.define "mbenbajjSW" do |mbenbajjSW|
+    mbenbajjSW.vm.hostname = "mbenbajjSW"
+    mbenbajjSW.vm.network "private_network", ip: "192.168.56.111", primary: true  
+    mbenbajjSW.vm.provision "shell", inline: <<-SHELL
+      # Remove the current default route (via eth0/NAT)
+      ip route del default
+      # Add new default route via eth1's gateway
+      ip route add default via 192.168.56.111 dev eth1
+    SHELL
   end
 
   #
