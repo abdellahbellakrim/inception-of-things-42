@@ -38,7 +38,7 @@ Vagrant.configure("2") do |config|
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
   # your network.
-  # config.vm.network "public_network"
+  config.vm.network "public_network", bridge: "en0: Wi-Fi"
 
   # Share an additional folder to the guest VM. The first argument is
   # the path on the host to the actual folder. The second argument is
@@ -59,35 +59,33 @@ Vagrant.configure("2") do |config|
   #
   config.vm.provider "virtualbox" do |vb|
     # Display the VirtualBox GUI when booting the machine
-    # vb.gui = true
+    vb.gui = false
   
     # Customize the amount of memory on the VM:
     vb.memory = "1024"
     vb.cpus = 1
+    # Enable DNS resolution in the VM
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
   end
 
 
 config.vm.define "abellakrS" do |abellakrS|
     abellakrS.vm.hostname = "abellakrS"
     abellakrS.vm.network "private_network", ip: "192.168.56.110", primary: true
+    abellakrS.vm.provider "virtualbox" do |vb|
+      vb.name = "abellakrS"
+    end
     abellakrS.vm.provision "shell", inline: <<-SHELL
-      # Remove the current default route (via eth0/NAT)
-      ip route del default
-      # Add new default route via eth1's gateway
-      ip route add default via 192.168.56.110 dev eth1
+      echo "Provisioning abellakrS"
+      sudo apt-get update
+      echo "Installing k3s on abellakrS"
+      sudo curl -sfL https://get.k3s.io | sh -
     SHELL
   end
 
-  config.vm.define "mbenbajjSW" do |mbenbajjSW|
-    mbenbajjSW.vm.hostname = "mbenbajjSW"
-    mbenbajjSW.vm.network "private_network", ip: "192.168.56.111", primary: true  
-    mbenbajjSW.vm.provision "shell", inline: <<-SHELL
-      # Remove the current default route (via eth0/NAT)
-      ip route del default
-      # Add new default route via eth1's gateway
-      ip route add default via 192.168.56.111 dev eth1
-    SHELL
-  end
+
+  
 
   #
   # View the documentation for the provider you are using for more
