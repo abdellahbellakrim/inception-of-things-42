@@ -1,0 +1,5 @@
+# Vagrant's local machine state (VM ids, SSH private keys), inside any folder
+.vagrant/
+
+# macOS
+.DS_Store
